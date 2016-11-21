@@ -27,7 +27,7 @@
 
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
-project(ecw NONE)
+project(ecw)
 
 # some init settings
 set(CMAKE_COLOR_MAKEFILE ON)
@@ -63,19 +63,20 @@ endif()
 
 if (NOT DOWNLOAD_PATH)
     message(FATAL_ERROR "There is no relevant libs")
-    return()
 endif()
 
-file(DOWNLOAD ${DOWNLOAD_PATH} "${CMAKE_BINARY_DIR}/lib.zip" STATUS ECW_DOWNLOAD_STATUS SHOW_PROGRESS)
+file(DOWNLOAD ${DOWNLOAD_PATH} "${CMAKE_BINARY_DIR}/ecw.zip" SHOW_PROGRESS STATUS ECW_DOWNLOAD_STATUS LOG ECW_LOG)
 
 list(GET ECW_DOWNLOAD_STATUS 0 ECW_DOWNLOAD_STATUS_CODE)
-if (NOT ${ECW_DOWNLOAD_STATUS_CODE} EQUAL 0)
-    message(FATAL_ERROR "Can not download ecw lib by url:\n\t${DOWNLOAD_PATH}.\nGet error:\n\t${ECW_DOWNLOAD_STATUS}")
-    return()
+if (NOT ECW_DOWNLOAD_STATUS_CODE EQUAL 0)
+    message(FATAL_ERROR "Can not download ecw lib by url: ${DOWNLOAD_PATH}. 
+    error: ${ECW_DOWNLOAD_STATUS}
+    log: ${ECW_LOG}"
+    )
 endif()
 
 execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/lib.zip
+    COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/ecw.zip
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
@@ -97,16 +98,16 @@ target_compile_definitions(
 
 # TODO Add mac and linux specific
 target_link_libraries(
-    ${LIB_NAME} INTERFACE "${CMAKE_BINARY_DIR}/lib/lib/NCSEcw.lib"
+    ${LIB_NAME} INTERFACE "${CMAKE_BINARY_DIR}/ecw/lib/NCSEcw.lib"
 )
 
 export(TARGETS ${LIB_NAME} FILE ${LIB_NAME}-exports.cmake)
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
-    install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/lib/" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
-    install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/bin/" DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/lib/" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/bin/" DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
 endif()
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
-    install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/include/" DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}/libecw")
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/include/" DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}/libecw")
 endif()    
 

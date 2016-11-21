@@ -25,23 +25,23 @@ function(check_version major minor service build)
     # parse the version number from gdal_version.h and include in
     # major, minor and rev parameters
 
-    file(READ ${CMAKE_BINARY_DIR}/lib/include/ECWJP2BuildNumber.h VERSION_H_CONTENTS)
+    file(READ ${CMAKE_BINARY_DIR}/include/ECWJP2BuildNumber.h VERSION_H_CONTENTS)
 
-    string(REGEX MATCH "NCS_ECWJP2_VER_MAJOR[ \t]+([0-9]+)"
+    string(REGEX MATCH "_VER_MAJOR[ \t]+([0-9]+)"
       MAJOR_VERSION ${VERSION_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
+    string(REGEX MATCH "([0-9]+)"
       MAJOR_VERSION ${MAJOR_VERSION})
-    string(REGEX MATCH "NCS_ECWJP2_VER_MINOR[ \t]+([0-9]+)"
+    string(REGEX MATCH "_VER_MINOR[ \t]+([0-9]+)"
       MINOR_VERSION ${VERSION_H_CONTENTS})
     string (REGEX MATCH "([0-9]+)"
       MINOR_VERSION ${MINOR_VERSION})
-    string(REGEX MATCH "NCS_ECWJP2_VER_SERVICE[ \t]+([0-9]+)"
+    string(REGEX MATCH "_VER_SERVICE[ \t]+([0-9]+)"
       SRV_VERSION ${VERSION_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
+    string(REGEX MATCH "([0-9]+)"
       SRV_VERSION ${SRV_VERSION})
-    string(REGEX MATCH "NCS_ECWJP2_VER_SERVICE[ \t]+([0-9]+)"
+    string(REGEX MATCH "_VER_BUILD[ \t]+([0-9]+)"
       BLD_VERSION ${VERSION_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
+    string(REGEX MATCH "([0-9]+)"
       BLD_VERSION ${BLD_VERSION})
       
     set(${major} ${MAJOR_VERSION} PARENT_SCOPE)
