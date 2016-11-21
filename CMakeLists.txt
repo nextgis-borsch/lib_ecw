@@ -2,6 +2,7 @@
 # Project:  CMake build scripts for ECW library
 # Purpose:  CMake build scripts
 # Author:   Alexander Lisovenko, alexander.lisovenko@gmail.com
+# Author:   Dmitry Baryshnikov, bishop.dev@gmail.com
 ################################################################################
 # Copyright (C) 2016, NextGIS <info@nextgis.com>
 #
@@ -24,23 +25,39 @@
 # DEALINGS IN THE SOFTWARE.
 ################################################################################
 
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
-project(libecw NONE)
+project(ecw NONE)
 
+# some init settings
 set(CMAKE_COLOR_MAKEFILE ON)
+# set path to additional CMake modules
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
 
 include(GNUInstallDirs)
-
-set(FOR_MSVC_12 TRUE CACHE BOOL "Install libs for msvc 12")
 
 set(PUBLIC_HDRS
 )
 
 set(DOWNLOAD_PATH_BASE "http://176.9.38.120/third-party/ecw/current")
 if(WIN32)
-    if(FOR_MSVC_12)
-        set(DOWNLOAD_PATH "${DOWNLOAD_PATH_BASE}/win/x86/vc12/ecw.zip" )
+    if(CMAKE_CL_64)
+        if(MSVC11)
+            set(DOWNLOAD_PATH "${DOWNLOAD_PATH_BASE}/win/x86_64/vc110/lib.zip" )
+        elseif(MSVC12)
+            set(DOWNLOAD_PATH "${DOWNLOAD_PATH_BASE}/win/x86_64/vc120/lib.zip" )
+        elseif(MSVC14)
+            set(DOWNLOAD_PATH "${DOWNLOAD_PATH_BASE}/win/x86_64/vc140/lib.zip" )
+        endif()
+    else()
+        if(MSVC11)
+            set(DOWNLOAD_PATH "${DOWNLOAD_PATH_BASE}/win/x86/vc110/lib.zip" )
+        elseif(MSVC12)
+            set(DOWNLOAD_PATH "${DOWNLOAD_PATH_BASE}/win/x86/vc120/lib.zip" )
+        elseif(MSVC14)
+            set(DOWNLOAD_PATH "${DOWNLOAD_PATH_BASE}/win/x86/vc140/lib.zip" )
+        endif()
     endif()
 endif()
 
@@ -49,7 +66,7 @@ if (NOT DOWNLOAD_PATH)
     return()
 endif()
 
-file(DOWNLOAD ${DOWNLOAD_PATH} "${CMAKE_BINARY_DIR}/ecw.zip" STATUS ECW_DOWNLOAD_STATUS SHOW_PROGRESS)
+file(DOWNLOAD ${DOWNLOAD_PATH} "${CMAKE_BINARY_DIR}/lib.zip" STATUS ECW_DOWNLOAD_STATUS SHOW_PROGRESS)
 
 list(GET ECW_DOWNLOAD_STATUS 0 ECW_DOWNLOAD_STATUS_CODE)
 if (NOT ${ECW_DOWNLOAD_STATUS_CODE} EQUAL 0)
@@ -58,7 +75,7 @@ if (NOT ${ECW_DOWNLOAD_STATUS_CODE} EQUAL 0)
 endif()
 
 execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/ecw.zip
+    COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/lib.zip
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
@@ -66,18 +83,30 @@ set(LIB_NAME ${PROJECT_NAME})
 
 add_library(${LIB_NAME} INTERFACE)
 
-#TODO Read and check version
-set(ECWSDK_VERSION 53)
+include(util)
+check_version(ECW_MAJOR_VERSION ECW_MINOR_VERSION ECW_SERVICE_VERSION ECW_BUILD_VERSION)
+set(VERSION ${ECW_MAJOR_VERSION}.${ECW_MINOR_VERSION}.${ECW_SERVICE_VERSION}.${ECW_BUILD_VERSION})
+#report version
+report_version(${PROJECT_NAME} ${VERSION})
+
+#Read and check version
+set(ECWSDK_VERSION ${ECW_MAJOR_VERSION}${ECW_MINOR_VERSION})
 target_compile_definitions(
     ${LIB_NAME} INTERFACE ECWSDK_VERSION=${ECWSDK_VERSION}
 )
 
+# TODO Add mac and linux specific
 target_link_libraries(
-    ${LIB_NAME} INTERFACE "${CMAKE_BINARY_DIR}/ecw/lib/NCSEcw.lib"
+    ${LIB_NAME} INTERFACE "${CMAKE_BINARY_DIR}/lib/lib/NCSEcw.lib"
 )
 
 export(TARGETS ${LIB_NAME} FILE ${LIB_NAME}-exports.cmake)
 
-install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/include/" DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}/libecw")
-install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/lib/" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
-install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/bin/" DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
+if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/lib/" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/bin/" DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
+endif()
+if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/include/" DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}/libecw")
+endif()    
+
