@@ -69,7 +69,7 @@ file(DOWNLOAD ${DOWNLOAD_PATH} "${CMAKE_BINARY_DIR}/ecw.zip" SHOW_PROGRESS STATU
 
 list(GET ECW_DOWNLOAD_STATUS 0 ECW_DOWNLOAD_STATUS_CODE)
 if (NOT ECW_DOWNLOAD_STATUS_CODE EQUAL 0)
-    message(FATAL_ERROR "Can not download ecw lib by url: ${DOWNLOAD_PATH}. 
+    message(FATAL_ERROR "Can not download lib by url: ${DOWNLOAD_PATH}. 
     error: ${ECW_DOWNLOAD_STATUS}
     log: ${ECW_LOG}"
     )
@@ -98,16 +98,16 @@ target_compile_definitions(
 
 # TODO Add mac and linux specific
 target_link_libraries(
-    ${LIB_NAME} INTERFACE "${CMAKE_BINARY_DIR}/ecw/lib/NCSEcw.lib"
+    ${LIB_NAME} INTERFACE "${CMAKE_BINARY_DIR}/lib/NCSEcw.lib"
 )
 
 export(TARGETS ${LIB_NAME} FILE ${LIB_NAME}-exports.cmake)
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
-    install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/lib/" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
-    install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/bin/" DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/" DESTINATION "${CMAKE_INSTALL_FULL_BINDIR}")
 endif()
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
-    install(DIRECTORY "${CMAKE_BINARY_DIR}/ecw/include/" DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}/libecw")
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/include/" DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}/libecw")
 endif()    
 
