@@ -43,12 +43,12 @@ function(check_version major minor service build)
       BLD_VERSION ${VERSION_H_CONTENTS})
     string(REGEX MATCH "([0-9]+)"
       BLD_VERSION ${BLD_VERSION})
-      
+
     set(${major} ${MAJOR_VERSION} PARENT_SCOPE)
     set(${minor} ${MINOR_VERSION} PARENT_SCOPE)
     set(${service} ${SRV_VERSION} PARENT_SCOPE)
     set(${build} ${BLD_VERSION} PARENT_SCOPE)
-    
+
 endfunction(check_version)
 
 function(report_version name ver)
@@ -56,10 +56,10 @@ function(report_version name ver)
     string(ASCII 27 Esc)
     set(BoldYellow  "${Esc}[1;33m")
     set(ColourReset "${Esc}[m")
-        
+
     message(STATUS "${BoldYellow}${name} version ${ver}${ColourReset}")
-    
-endfunction()  
+
+endfunction()
 
 
 # macro to find packages on the host OS
@@ -68,17 +68,9 @@ macro( find_exthost_package )
         set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
         set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER )
         set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER )
-        if( CMAKE_HOST_WIN32 )
-            SET( WIN32 1 )
-            SET( UNIX )
-        elseif( CMAKE_HOST_APPLE )
-            SET( APPLE 1 )
-            SET( UNIX )
-        endif()
+
         find_package( ${ARGN} )
-        SET( WIN32 )
-        SET( APPLE )
-        SET( UNIX 1 )
+
         set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY )
         set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
         set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
@@ -94,17 +86,9 @@ macro( find_exthost_program )
         set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
         set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER )
         set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER )
-        if( CMAKE_HOST_WIN32 )
-            SET( WIN32 1 )
-            SET( UNIX )
-        elseif( CMAKE_HOST_APPLE )
-            SET( APPLE 1 )
-            SET( UNIX )
-        endif()
+
         find_program( ${ARGN} )
-        SET( WIN32 )
-        SET( APPLE )
-        SET( UNIX 1 )
+
         set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY )
         set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
         set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
@@ -120,17 +104,9 @@ macro( find_exthost_path )
         set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
         set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER )
         set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER )
-        if( CMAKE_HOST_WIN32 )
-            SET( WIN32 1 )
-            SET( UNIX )
-        elseif( CMAKE_HOST_APPLE )
-            SET( APPLE 1 )
-            SET( UNIX )
-        endif()
+
         find_path( ${ARGN} )
-        SET( WIN32 )
-        SET( APPLE )
-        SET( UNIX 1 )
+
         set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY )
         set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
         set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
